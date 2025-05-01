@@ -1,0 +1,6 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: mac.lan
+Building DAG of jobs...
+WorkflowError:
+Invalid singularity image URL containing whitespace.

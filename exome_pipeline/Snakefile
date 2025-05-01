@@ -1,0 +1,59 @@
+SAMPLES = ["sample1"]
+
+rule all:
+    input:
+        expand("results/{sample}_R1_trimmed_fastqc.html", sample=SAMPLES),
+        expand("results/{sample}_R2_trimmed_fastqc.html", sample=SAMPLES)
+
+rule fastqc_raw:
+    input:
+        r1="data/{sample}_R1.fastq.gz",
+        r2="data/{sample}_R2.fastq.gz"
+    output:
+        "results/{sample}_R1_fastqc.html",
+        "results/{sample}_R2_fastqc.html"
+    container:
+        "quay.io/biocontainers/fastqc:0.11.9--0"
+    shell:
+        """
+        mkdir -p results
+        fastqc {input.r1} {input.r2} --outdir results
+        """
+
+rule trimmomatic:
+    input:
+        r1="data/{sample}_R1.fastq.gz",
+        r2="data/{sample}_R2.fastq.gz",
+        adapter="adapters/TruSeq3-PE.fa"
+    output:
+        r1_trimmed="results/{sample}_R1_trimmed.fastq.gz",
+        r2_trimmed="results/{sample}_R2_trimmed.fastq.gz"
+    container:
+        "quay.io/biocontainers/trimmomatic:0.39--hdfd78af_2"
+
+    shell:
+        """
+        mkdir -p results
+        trimmomatic PE -phred33 \
+            {input.r1} {input.r2} \
+            {output.r1_trimmed} /dev/null \
+            {output.r2_trimmed} /dev/null \
+            ILLUMINACLIP={input.adapter}:2:30:10 \
+            LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+        """
+
+
+rule fastqc_trimmed:
+    input:
+        r1="results/{sample}_R1_trimmed.fastq.gz",
+        r2="results/{sample}_R2_trimmed.fastq.gz"
+    output:
+        "results/{sample}_R1_trimmed_fastqc.html",
+        "results/{sample}_R2_trimmed_fastqc.html"
+    container:
+        "quay.io/biocontainers/fastqc:0.11.9--0"
+    shell:
+        """
+        fastqc {input.r1} {input.r2} --outdir results
+        """
+
