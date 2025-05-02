@@ -1,0 +1,15 @@
+prefix: "sample"
+fastq1: "data/sample_R1.fastq.gz"
+fastq2: "data/sample_R2.fastq.gz"
+adapters: "resources/adapters.fa"
+skewer_threads: 4
+minimum_read_length: 30
+idx: "resources/kallisto_index.idx"
+gtf: "resources/transcripts.gtf"
+kallisto_threads: 4
+bootstrap_samples: 100
+ref_tar: "resources/star_reference.tar.gz"
+STAR_threads: 8
+ref_flat: "resources/ref_flat.txt"
+ribosomal_interval: "resources/rRNA.interval_list"
+ref_seq: "resources/reference.fa"
